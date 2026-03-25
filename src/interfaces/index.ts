@@ -1,3 +1,8 @@
+export type LatLon = {
+  lat: number
+  lon: number
+}
+
 export interface CoordinatesResponse {
   name: string
   local_names: Record<string, string>

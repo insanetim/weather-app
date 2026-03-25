@@ -3,12 +3,8 @@ import type {
   CoordinatesResponse,
   CurrentWeatherResponse,
   ForecastResponse,
+  LatLon,
 } from "../interfaces"
-
-type LatLon = {
-  lat: number
-  lon: number
-}
 
 const client = axios.create({
   timeout: 10000,
@@ -35,7 +31,7 @@ export const getCoordinatesByLocationName = async (query: string) => {
     "http://api.openweathermap.org/geo/1.0/direct",
     {
       params: {
-        query,
+        q: query,
         limit: 5,
       },
     }

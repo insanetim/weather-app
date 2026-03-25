@@ -1,7 +1,7 @@
 <script setup lang="ts">
 import { Star, Trash2 } from "lucide-vue-next"
 import { ref, watch } from "vue"
-import type { CoordinatesResponse } from "../interfaces"
+import type { CoordinatesResponse, LatLon } from "../interfaces"
 import { getCoordinatesByLocationName } from "../services/api"
 import CurrentWeather from "./CurrentWeather.vue"
 import SearchCityInput from "./SearchCityInput.vue"
@@ -25,7 +25,7 @@ const emit = defineEmits<{
 }>()
 
 const query = ref("")
-const location = ref("")
+const coordinates = ref<LatLon>({ lat: 0, lon: 0 })
 const dropdownItems = ref<CoordinatesResponse[]>([])
 
 const handleSearchChange = (value: string) => {
@@ -33,7 +33,7 @@ const handleSearchChange = (value: string) => {
 }
 
 const handleCitySelected = (item: CoordinatesResponse) => {
-  location.value = item.name
+  coordinates.value = { lat: item.lat, lon: item.lon }
 }
 
 watch(query, async newQuery => {
@@ -50,10 +50,10 @@ watch(query, async newQuery => {
   }
 })
 
-const activeTab = ref("current")
+const activeView = ref("current")
 
 const handleTabChange = (value: string) => {
-  activeTab.value = value
+  activeView.value = value
 }
 </script>
 
@@ -96,7 +96,7 @@ const handleTabChange = (value: string) => {
           ]"
           :key="tab.value"
           @click="handleTabChange(tab.value)"
-          :variant="activeTab === tab.value ? 'contained' : 'outlined'"
+          :variant="activeView === tab.value ? 'contained' : 'outlined'"
           size="small"
         >
           {{ tab.label }}
@@ -104,8 +104,8 @@ const handleTabChange = (value: string) => {
       </div>
       <div class="tab-content">
         <keep-alive>
-          <CurrentWeather v-if="activeTab === 'current'" />
-          <WeekForecast v-else-if="activeTab === 'week'" />
+          <CurrentWeather v-if="activeView === 'current'" />
+          <WeekForecast v-else-if="activeView === 'week'" />
         </keep-alive>
       </div>
     </div>
