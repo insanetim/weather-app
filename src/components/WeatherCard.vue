@@ -1,4 +1,7 @@
 <script setup lang="ts">
+import ErrorAlert from "./UI/ErrorAlert.vue"
+import Loading from "./UI/Loading.vue"
+
 interface Props {
   cityName?: string
   state?: string
@@ -7,6 +10,8 @@ interface Props {
   feelsLike?: number
   weatherIcon?: string
   weatherDescription?: string
+  loading?: boolean
+  error?: string
 }
 
 const props = defineProps<Props>()
@@ -17,53 +22,70 @@ const getTemperature = (temp: number) => Math.round(temp - 273.15)
 
 <template>
   <div class="weather-card">
-    <div class="weather-header">
-      <div class="location-info">
-        <span
-          v-if="country"
-          :class="`fi fi-${country.toLowerCase()}`"
-          :title="country"
-          class="country-flag"
-        ></span>
-        <div
-          v-else
-          class="no-flag"
-        >
-          ?
-        </div>
-        <div class="location-details">
-          <h3 class="city-name">{{ cityName }}</h3>
-          <span
-            v-if="state"
-            class="state-name"
-            >{{ state }}</span
-          >
-        </div>
-      </div>
-      <div class="temperature-display">
-        <div
-          v-if="temperature"
-          class="temperature"
-        >
-          {{ getTemperature(temperature) }}°C
-        </div>
-        <div
-          v-if="feelsLike"
-          class="feels-like"
-        >
-          Feels like {{ getTemperature(feelsLike) }}°C
-        </div>
-      </div>
+    <Loading
+      v-if="loading"
+      message="Loading weather data..."
+    />
+    <ErrorAlert
+      v-else-if="error"
+      :message="error"
+    />
+    <div
+      v-else-if="!cityName"
+      class="placeholder-text"
+    >
+      Select a city to view weather information
     </div>
+    <div v-else>
+      <div class="weather-header">
+        <div class="location-info">
+          <span
+            v-if="country"
+            :class="`fi fi-${country.toLowerCase()}`"
+            :title="country"
+            class="country-flag"
+          ></span>
+          <div
+            v-else
+            class="no-flag"
+          >
+            ?
+          </div>
+          <div class="location-details">
+            <h3 class="city-name">{{ cityName }}</h3>
+            <span
+              v-if="state"
+              class="state-name"
+              >{{ state }}</span
+            >
+          </div>
+        </div>
+        <div class="temperature-display">
+          <div
+            v-if="temperature"
+            class="temperature"
+          >
+            {{ getTemperature(temperature) }}°C
+          </div>
+          <div
+            v-if="feelsLike"
+            class="feels-like"
+          >
+            Feels like {{ getTemperature(feelsLike) }}°C
+          </div>
+        </div>
+      </div>
 
-    <div class="weather-main">
-      <div class="weather-icon-container">
-        <img
-          :src="`https://openweathermap.org/img/wn/${weatherIcon}@2x.png`"
-          :alt="weatherDescription"
-          class="weather-icon"
-        />
-        <div class="weather-description">{{ weatherDescription }}</div>
+      <div class="weather-main">
+        <div class="weather-icon-container">
+          <img
+            v-if="weatherIcon"
+            :src="`https://openweathermap.org/img/wn/${weatherIcon}@2x.png`"
+            :alt="weatherDescription"
+            class="weather-icon"
+          />
+          <div class="weather-description">{{ weatherDescription }}</div>
+        </div>
       </div>
     </div>
   </div>
@@ -73,6 +95,13 @@ const getTemperature = (temp: number) => Math.round(temp - 273.15)
 .weather-card {
   border-radius: 12px;
   background-color: var(--bg);
+}
+
+.placeholder-text {
+  text-align: center;
+  color: var(--text-secondary);
+  font-size: 16px;
+  padding: 60px 20px;
 }
 
 .weather-header {

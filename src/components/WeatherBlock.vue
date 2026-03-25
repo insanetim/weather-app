@@ -238,7 +238,6 @@ onMounted(async () => {
         </Button>
       </div>
       <WeatherCard
-        v-if="city && weatherDataComputed"
         :city-name="city?.name"
         :state="city?.state"
         :country="city?.country"
@@ -246,13 +245,9 @@ onMounted(async () => {
         :feels-like="weatherDataComputed?.feelsLike"
         :weather-icon="weatherDataComputed?.weatherIcon"
         :weather-description="weatherDataComputed?.weatherDescription"
+        :loading="loading"
+        :error="error || undefined"
       />
-      <div
-        v-else
-        class="placeholder-text"
-      >
-        Select a city to view weather information
-      </div>
     </div>
 
     <WeatherChart />
