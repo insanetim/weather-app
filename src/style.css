@@ -50,6 +50,12 @@
   }
 }
 
+*,
+*::before,
+*::after {
+  box-sizing: border-box;
+}
+
 body {
   margin: 0;
 }
@@ -91,4 +97,5 @@ p {
   min-height: 100vh;
   display: flex;
   flex-direction: column;
+  padding-bottom: 40px;
 }
