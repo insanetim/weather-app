@@ -2,7 +2,7 @@
 import { Star, Trash2 } from "lucide-vue-next"
 import { ref, watch } from "vue"
 import type { CoordinatesResponse, LatLon } from "../interfaces"
-import { getCoordinatesByLocationName } from "../services/api"
+import { getCoordinatesByLocationName, getCurrentWeather, getDailyForecast } from "../services/api"
 import CurrentWeather from "./CurrentWeather.vue"
 import SearchCityInput from "./SearchCityInput.vue"
 import Button from "./UI/Button.vue"
@@ -55,6 +55,21 @@ const activeView = ref("current")
 const handleTabChange = (value: string) => {
   activeView.value = value
 }
+
+// Fetch weather data based on active view
+watch(activeView, async (newView) => {
+  if (coordinates.value.lat !== 0 && coordinates.value.lon !== 0) {
+    try {
+      if (newView === 'current') {
+        await getCurrentWeather(coordinates.value)
+      } else if (newView === 'week') {
+        await getDailyForecast(coordinates.value)
+      }
+    } catch (error) {
+      console.error("Error fetching weather data:", error)
+    }
+  }
+})
 </script>
 
 <template>

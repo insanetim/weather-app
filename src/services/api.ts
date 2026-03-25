@@ -28,7 +28,7 @@ client.interceptors.request.use(config => {
 
 export const getCoordinatesByLocationName = async (query: string) => {
   const response = await client.get<CoordinatesResponse[]>(
-    "http://api.openweathermap.org/geo/1.0/direct",
+    "https://api.openweathermap.org/geo/1.0/direct",
     {
       params: {
         q: query,
