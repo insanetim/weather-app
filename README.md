@@ -5,3 +5,7 @@ This is a weather application that allows users to search for weather informatio
 ## Technical Specifications
 
 This project is developed according to the technical specifications located in the `docs` folder.
+
+## Demo
+
+https://weather-app-insanetim.vercel.app/
