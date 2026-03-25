@@ -2,10 +2,13 @@
 import { Plus } from "lucide-vue-next"
 import { ref } from "vue"
 import Button from "./UI/Button.vue"
+import Modal from "./UI/Modal.vue"
 import WeatherBlock from "./WeatherBlock.vue"
 
-const weatherBlocks = ref([1])
+const weatherBlocks = ref([Date.now()])
 const maxBlocks = 5
+const showDeleteModal = ref(false)
+const blockToDelete = ref<number | null>(null)
 
 const addWeatherBlock = () => {
   if (weatherBlocks.value.length < maxBlocks) {
@@ -13,13 +16,24 @@ const addWeatherBlock = () => {
   }
 }
 
-const removeWeatherBlock = (id: number) => {
-  if (weatherBlocks.value.length > 1) {
-    const index = weatherBlocks.value.indexOf(id)
+const confirmDelete = (id: number) => {
+  blockToDelete.value = id
+  showDeleteModal.value = true
+}
+
+const removeWeatherBlock = () => {
+  if (blockToDelete.value !== null) {
+    const index = weatherBlocks.value.indexOf(blockToDelete.value)
     if (index > -1) {
       weatherBlocks.value.splice(index, 1)
     }
+    closeDeleteModal()
   }
+}
+
+const closeDeleteModal = () => {
+  showDeleteModal.value = false
+  blockToDelete.value = null
 }
 
 const canAddMore = () => {
@@ -38,7 +52,7 @@ const canAddMore = () => {
           v-for="block in weatherBlocks"
           :key="block"
           :removable="weatherBlocks.length > 1"
-          @remove="removeWeatherBlock(block)"
+          @remove="confirmDelete(block)"
         />
       </TransitionGroup>
     </div>
@@ -55,12 +69,25 @@ const canAddMore = () => {
       </Button>
 
       <div
-        v-if="!canAddMore()"
+        v-else
         class="limit-message"
       >
         Maximum of {{ maxBlocks }} weather blocks reached
       </div>
     </div>
+
+    <!-- Delete Confirmation Modal -->
+    <Modal
+      :open="showDeleteModal"
+      title="Confirm Delete"
+      :on-cancel="closeDeleteModal"
+      :on-submit="removeWeatherBlock"
+      cancel-text="Cancel"
+      submit-text="Delete"
+      @close="closeDeleteModal"
+    >
+      <p>Are you sure you want to remove this weather block?</p>
+    </Modal>
   </div>
 </template>
 

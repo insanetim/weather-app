@@ -1,8 +1,8 @@
 <script setup lang="ts">
-import { computed, useSlots } from "vue"
+import { computed } from "vue"
 
 interface Props {
-  variant?: "contained" | "outlined"
+  variant?: "contained" | "outlined" | "secondary"
   color?: "primary" | "danger"
   disabled?: boolean
   type?: "button" | "submit" | "reset"
@@ -17,17 +17,12 @@ const props = withDefaults(defineProps<Props>(), {
   size: "medium",
 })
 
-const slots = useSlots()
-
 const buttonClasses = computed(() => [
   "button",
   `button--${props.variant}`,
   `button--${props.color}`,
   `button--${props.size}`,
-  {
-    "button--disabled": props.disabled,
-    "button--icon-only": slots.default?.().length === 1,
-  },
+  { "button--disabled": props.disabled },
 ])
 </script>
 
@@ -62,40 +57,21 @@ const buttonClasses = computed(() => [
   padding: 4px;
   font-size: 12px;
   min-height: 28px;
-  width: 28px;
+  min-width: 28px;
 }
 
 .button--medium {
   padding: 8px;
   font-size: 14px;
   min-height: 36px;
-  width: 36px;
+  min-width: 36px;
 }
 
 .button--large {
   padding: 12px;
   font-size: 16px;
   min-height: 44px;
-  width: 44px;
-}
-
-/* Icon-only variants */
-.button--small.button--icon-only {
-  padding: 4px;
-  width: 28px;
-  height: 28px;
-}
-
-.button--medium.button--icon-only {
-  padding: 8px;
-  width: 36px;
-  height: 36px;
-}
-
-.button--large.button--icon-only {
-  padding: 12px;
-  width: 44px;
-  height: 44px;
+  min-width: 44px;
 }
 
 /* Contained variants */
@@ -140,6 +116,19 @@ const buttonClasses = computed(() => [
 
 .button--outlined.button--danger:hover:not(.button--disabled) {
   background-color: rgba(220, 38, 38, 0.1);
+}
+
+/* Secondary variant */
+.button--secondary {
+  background-color: transparent;
+  color: var(--text);
+  border: none;
+  opacity: 0.7;
+}
+
+.button--secondary:hover:not(.button--disabled) {
+  opacity: 1;
+  background-color: var(--code-bg);
 }
 
 /* Disabled state */
