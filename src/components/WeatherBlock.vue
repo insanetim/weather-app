@@ -1,13 +1,20 @@
 <script setup lang="ts">
 import { Star, Trash2 } from "lucide-vue-next"
-import { ref, watch } from "vue"
-import type { CoordinatesResponse, LatLon } from "../interfaces"
-import { getCoordinatesByLocationName, getCurrentWeather, getDailyForecast } from "../services/api"
-import CurrentWeather from "./CurrentWeather.vue"
+import { computed, onMounted, ref, watch } from "vue"
+import type {
+  CoordinatesResponse,
+  CurrentWeatherResponse,
+  ForecastResponse,
+} from "../interfaces"
+import {
+  getCoordinatesByLocationName,
+  getCurrentWeather,
+  getForecast,
+} from "../services/api"
 import SearchCityInput from "./SearchCityInput.vue"
 import Button from "./UI/Button.vue"
+import WeatherCard from "./WeatherCard.vue"
 import WeatherChart from "./WeatherChart.vue"
-import WeekForecast from "./WeekForecast.vue"
 
 interface Props {
   removable?: boolean
@@ -25,7 +32,7 @@ const emit = defineEmits<{
 }>()
 
 const query = ref("")
-const coordinates = ref<LatLon>({ lat: 0, lon: 0 })
+const city = ref<CoordinatesResponse | null>(null)
 const dropdownItems = ref<CoordinatesResponse[]>([])
 
 const handleSearchChange = (value: string) => {
@@ -33,7 +40,7 @@ const handleSearchChange = (value: string) => {
 }
 
 const handleCitySelected = (item: CoordinatesResponse) => {
-  coordinates.value = { lat: item.lat, lon: item.lon }
+  city.value = item
 }
 
 watch(query, async newQuery => {
@@ -51,23 +58,136 @@ watch(query, async newQuery => {
 })
 
 const activeView = ref("current")
+const currentWeather = ref<CurrentWeatherResponse | null>(null)
+const forecastData = ref<ForecastResponse | null>(null)
+const loading = ref(false)
+const error = ref<string | null>(null)
 
 const handleTabChange = (value: string) => {
   activeView.value = value
 }
 
-// Fetch weather data based on active view
-watch(activeView, async (newView) => {
-  if (coordinates.value.lat !== 0 && coordinates.value.lon !== 0) {
-    try {
-      if (newView === 'current') {
-        await getCurrentWeather(coordinates.value)
-      } else if (newView === 'week') {
-        await getDailyForecast(coordinates.value)
-      }
-    } catch (error) {
-      console.error("Error fetching weather data:", error)
+const loadCurrentWeather = async () => {
+  if (!city.value) return
+
+  loading.value = true
+  error.value = null
+
+  try {
+    const data = await getCurrentWeather({
+      lat: city.value.lat,
+      lon: city.value.lon,
+    })
+    currentWeather.value = data
+  } catch (err) {
+    error.value = "Failed to load current weather"
+    console.error(err)
+  } finally {
+    loading.value = false
+  }
+}
+
+const loadForecast = async () => {
+  if (!city.value) return
+
+  loading.value = true
+  error.value = null
+
+  try {
+    const data = await getForecast({
+      lat: city.value.lat,
+      lon: city.value.lon,
+    })
+    forecastData.value = data
+  } catch (err) {
+    error.value = "Failed to load weekly forecast"
+    console.error(err)
+  } finally {
+    loading.value = false
+  }
+}
+
+// Computed property for weather data
+const weatherDataComputed = computed(() => {
+  if (activeView.value === "current" && currentWeather.value) {
+    return {
+      temperature: currentWeather.value.main?.temp || 0,
+      feelsLike: currentWeather.value.main?.feels_like || 0,
+      weatherIcon: currentWeather.value.weather?.[0].icon || "01d",
+      weatherDescription:
+        currentWeather.value.weather?.[0].description || "Unknown",
     }
+  } else if (activeView.value === "forecast" && forecastData.value) {
+    // Calculate average values from forecast list
+    const temps = forecastData.value.list.map(item => item.main.temp)
+    const avgTemp =
+      temps.length > 0
+        ? Math.round(temps.reduce((sum, temp) => sum + temp, 0) / temps.length)
+        : 0
+
+    const feelsLikes = forecastData.value.list.map(item => item.main.feels_like)
+    const avgFeelsLike =
+      feelsLikes.length > 0
+        ? Math.round(
+            feelsLikes.reduce((sum, feel) => sum + feel, 0) / feelsLikes.length
+          )
+        : 0
+
+    // Find most common weather condition
+    const weatherConditions = forecastData.value.list.map(
+      item => item.weather?.[0]?.description || ""
+    )
+
+    // Count frequency of each weather condition
+    const weatherCounts: Record<string, number> = {}
+    weatherConditions.forEach(condition => {
+      if (condition) {
+        weatherCounts[condition] = (weatherCounts[condition] || 0) + 1
+      }
+    })
+
+    // Find the weather condition with highest count
+    const mostCommonWeather =
+      Object.keys(weatherCounts).length > 0
+        ? Object.keys(weatherCounts).reduce((a, b) =>
+            weatherCounts[a] > weatherCounts[b] ? a : b
+          )
+        : "Unknown"
+
+    return {
+      temperature: avgTemp,
+      feelsLike: avgFeelsLike,
+      weatherIcon: mostCommonWeather
+        ? forecastData.value.list[0]?.weather?.[0]?.icon || "01d"
+        : "01d",
+      weatherDescription: mostCommonWeather,
+    }
+  }
+
+  return null
+})
+
+watch(
+  [() => city.value, () => activeView.value],
+  async ([newCity, newView]) => {
+    if (!newCity) return
+
+    if (newView === "current") {
+      await loadCurrentWeather()
+    } else {
+      await loadForecast()
+    }
+  },
+  { immediate: true }
+)
+
+onMounted(async () => {
+  if (!city.value) return
+
+  if (activeView.value === "current") {
+    await loadCurrentWeather()
+  } else {
+    await loadForecast()
   }
 })
 </script>
@@ -103,25 +223,35 @@ watch(activeView, async (newView) => {
     </div>
 
     <div class="card-container">
-      <div class="tab-buttons">
+      <div class="view-buttons">
         <Button
-          v-for="tab in [
+          v-for="view in [
             { label: 'Today', value: 'current' },
-            { label: 'Week', value: 'week' },
+            { label: '5 Day Forecast', value: 'forecast' },
           ]"
-          :key="tab.value"
-          @click="handleTabChange(tab.value)"
-          :variant="activeView === tab.value ? 'contained' : 'outlined'"
+          :key="view.value"
+          @click="handleTabChange(view.value)"
+          :variant="activeView === view.value ? 'contained' : 'outlined'"
           size="small"
         >
-          {{ tab.label }}
+          {{ view.label }}
         </Button>
       </div>
-      <div class="tab-content">
-        <keep-alive>
-          <CurrentWeather v-if="activeView === 'current'" />
-          <WeekForecast v-else-if="activeView === 'week'" />
-        </keep-alive>
+      <WeatherCard
+        v-if="city && weatherDataComputed"
+        :city-name="city?.name"
+        :state="city?.state"
+        :country="city?.country"
+        :temperature="weatherDataComputed?.temperature"
+        :feels-like="weatherDataComputed?.feelsLike"
+        :weather-icon="weatherDataComputed?.weatherIcon"
+        :weather-description="weatherDataComputed?.weatherDescription"
+      />
+      <div
+        v-else
+        class="placeholder-text"
+      >
+        Select a city to view weather information
       </div>
     </div>
 
@@ -151,7 +281,18 @@ watch(activeView, async (newView) => {
   height: 20px;
 }
 
+.placeholder-text {
+  text-align: center;
+  color: var(--text-secondary);
+  font-size: 16px;
+  padding: 60px 20px;
+}
+
 .card-container {
+  height: 267px;
+  display: flex;
+  flex-direction: column;
+  justify-content: end;
   border: 1px solid var(--border);
   position: relative;
   border-radius: 8px;
@@ -159,7 +300,7 @@ watch(activeView, async (newView) => {
   background-color: var(--bg);
 }
 
-.tab-buttons {
+.view-buttons {
   position: absolute;
   top: 8px;
   left: 8px;
@@ -168,7 +309,7 @@ watch(activeView, async (newView) => {
   z-index: 1;
 }
 
-.tab-buttons .button {
+.view-buttons .button {
   font-size: 14px;
   padding: 6px 12px;
 }

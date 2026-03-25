@@ -30,10 +30,7 @@ export const getCoordinatesByLocationName = async (query: string) => {
   const response = await client.get<CoordinatesResponse[]>(
     "https://api.openweathermap.org/geo/1.0/direct",
     {
-      params: {
-        q: query,
-        limit: 5,
-      },
+      params: { q: query, limit: 5 },
     }
   )
   return response.data
@@ -43,38 +40,17 @@ export const getCurrentWeather = async ({ lat, lon }: LatLon) => {
   const response = await client.get<CurrentWeatherResponse>(
     "https://api.openweathermap.org/data/2.5/weather",
     {
-      params: {
-        lat,
-        lon,
-      },
+      params: { lat, lon },
     }
   )
   return response.data
 }
 
-export const getHourlyForecast = async ({ lat, lon }: LatLon) => {
+export const getForecast = async ({ lat, lon }: LatLon) => {
   const response = await client.get<ForecastResponse>(
-    "https://pro.openweathermap.org/data/2.5/forecast/hourly",
+    "https://api.openweathermap.org/data/2.5/forecast",
     {
-      params: {
-        lat,
-        lon,
-        cnt: 24,
-      },
-    }
-  )
-  return response.data
-}
-
-export const getDailyForecast = async ({ lat, lon }: LatLon) => {
-  const response = await client.get<ForecastResponse>(
-    "https://api.openweathermap.org/data/2.5/forecast/daily",
-    {
-      params: {
-        lat,
-        lon,
-        cnt: 7,
-      },
+      params: { lat, lon },
     }
   )
   return response.data

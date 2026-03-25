@@ -12,106 +12,89 @@ export interface CoordinatesResponse {
   state: string
 }
 
-type BaseResponse = {
-  cod: string
-  message: number
+type ClaudsType = {
+  all: number
 }
 
 type MainType = {
-  temp: number
   feels_like: number
-  pressure: number
-  humidity: number
-  temp_min: number
-  temp_max: number
-  sea_level: number
   grnd_level: number
+  humidity: number
+  pressure: number
+  sea_level: number
+  temp: number
+  temp_max: number
+  temp_min: number
 }
 
-type WeatherType = {
-  id: number
-  main: string
-  description: string
-  icon: string
-}
-
-export type CurrentWeatherResponse = BaseResponse & {
-  coord: {
-    lon: number
-    lat: number
-  }
-  weather: WeatherType
-  base: string
-  main: MainType
-  visibility: number
-  wind: {
-    speed: number
-    deg: number
-    gust: number
-  }
-  clouds: {
-    all: number
-  }
-  rain: {
-    "1h": number
-  }
-  snow: {
-    "1h": number
-  }
-  dt: number
-  sys: {
-    type: number
-    id: number
-    message: string
-    country: string
-    sunrise: number
-    sunset: number
-  }
-  timezone: number
-  id: number
-  name: string
-}
-
-type ForecastItem = {
-  dt: number
-  main: MainType
-  weather: WeatherType
-  clouds: {
-    all: number
-  }
-  wind: {
-    speed: number
-    deg: number
-    gust: number
-  }
-  rain: {
-    "1h": number
-  }
-  snow: {
-    "1h": number
-  }
-  visibility: number
-  pop: number
-  sys: {
-    pod: string
-  }
-  dt_txt: string
-}
-
-type CityDetails = {
-  id: number
-  name: string
-  coord: {
-    lat: number
-    lon: number
-  }
+type SysType = {
   country: string
-  timezone: number
   sunrise: number
   sunset: number
 }
 
-export type ForecastResponse = BaseResponse & {
+type WeatherType = {
+  description: string
+  icon: string
+  id: number
+  main: string
+}
+
+type WindType = {
+  deg: number
+  gust: number
+  speed: number
+}
+
+export type CurrentWeatherResponse = {
+  base: string
+  clouds: ClaudsType
+  cod: number
+  coord: LatLon
+  dt: number
+  id: number
+  main: MainType
+  name: string
+  sys: SysType
+  timezone: number
+  visibility: number
+  weather: WeatherType[]
+  wind: WindType
+}
+
+type ForecastItem = {
+  clouds: ClaudsType
+  dt: number
+  dt_txt: string
+  main: MainType
+  pop: number
+  rain: {
+    "3h": number
+  }
+  snow: {
+    "3h": number
+  }
+  sys: {
+    pod: string
+  }
+  visibility: number
+  weather: WeatherType[]
+  wind: WindType
+}
+
+type CityDetails = {
+  coord: LatLon
+  country: string
+  id: number
+  name: string
+  population: number
+  sunrise: number
+  sunset: number
+  timezone: number
+}
+
+export type ForecastResponse = {
+  cod: string
   cnt: number
   list: ForecastItem[]
   city: CityDetails
