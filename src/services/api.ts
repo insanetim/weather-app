@@ -1,5 +1,8 @@
 import axios from "axios"
-import type { GetCoordinatesResponse } from "../interfaces"
+import type {
+  GetCoordinatesResponse,
+  GetCurrentWeatherResponse,
+} from "../interfaces"
 
 const BASE_URL = "http://api.openweathermap.org/"
 
@@ -27,6 +30,19 @@ client.interceptors.request.use(config => {
 export const getCoordinatesByLocationName = async (query: string) => {
   const response = await client.get<GetCoordinatesResponse[]>(
     `geo/1.0/direct?q=${query}&limit=5`
+  )
+  return response.data
+}
+
+export const getCurrentWeather = async ({
+  lat,
+  lon,
+}: {
+  lat: number
+  lon: number
+}) => {
+  const response = await client.get<GetCurrentWeatherResponse>(
+    `data/2.5/weather?lat=${lat}&lon=${lon}`
   )
   return response.data
 }
