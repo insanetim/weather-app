@@ -284,7 +284,7 @@ onMounted(async () => {
 }
 
 .card-container {
-  height: 267px;
+  min-height: 267px;
   display: flex;
   flex-direction: column;
   justify-content: end;
@@ -292,6 +292,7 @@ onMounted(async () => {
   position: relative;
   border-radius: 8px;
   padding: 16px;
+  padding-top: 48px;
   background-color: var(--bg);
 }
 
@@ -307,10 +308,6 @@ onMounted(async () => {
 .view-buttons .button {
   font-size: 14px;
   padding: 6px 12px;
-}
-
-.tab-content {
-  margin-top: 56px;
 }
 
 .weather-block {
@@ -338,18 +335,5 @@ onMounted(async () => {
   display: flex;
   align-items: center;
   gap: 12px;
-}
-
-.weather-header h3 {
-  margin: 0;
-  font-size: 18px;
-  font-weight: 600;
-  color: var(--text-h);
-}
-
-.temperature {
-  font-size: 24px;
-  font-weight: bold;
-  color: var(--accent);
 }
 </style>
