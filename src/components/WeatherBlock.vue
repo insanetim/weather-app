@@ -89,17 +89,18 @@ const handleTabChange = (value: string) => {
 
     <div class="card-container">
       <div class="tab-buttons">
-        <button
+        <Button
           v-for="tab in [
             { label: 'Today', value: 'current' },
             { label: 'Week', value: 'week' },
           ]"
           :key="tab.value"
-          :class="['tab-button', { active: activeTab === tab.value }]"
           @click="handleTabChange(tab.value)"
+          :variant="activeTab === tab.value ? 'contained' : 'outlined'"
+          size="small"
         >
           {{ tab.label }}
-        </button>
+        </Button>
       </div>
       <div class="tab-content">
         <keep-alive>
@@ -152,26 +153,9 @@ const handleTabChange = (value: string) => {
   z-index: 1;
 }
 
-.tab-button {
-  padding: 6px 12px;
-  border: 1px solid var(--border);
-  background-color: var(--bg);
-  color: var(--text);
-  border-radius: 4px;
-  cursor: pointer;
+.tab-buttons .button {
   font-size: 14px;
-  transition: all 0.2s ease;
-}
-
-.tab-button:hover {
-  background-color: var(--accent-bg);
-  color: var(--accent);
-}
-
-.tab-button.active {
-  background-color: var(--accent);
-  color: white;
-  border-color: var(--accent);
+  padding: 6px 12px;
 }
 
 .tab-content {

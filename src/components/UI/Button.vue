@@ -82,8 +82,8 @@ const buttonClasses = computed(() => [
 }
 
 .button--contained.button--primary:hover:not(.button--disabled) {
-  background-color: var(--accent-border);
-  border-color: var(--accent-border);
+  background-color: #2563eb;
+  border-color: #2563eb;
 }
 
 .button--contained.button--danger {
@@ -105,7 +105,7 @@ const buttonClasses = computed(() => [
 }
 
 .button--outlined.button--primary:hover:not(.button--disabled) {
-  background-color: var(--accent-bg);
+  background-color: rgba(59, 130, 246, 0.05);
 }
 
 .button--outlined.button--danger {

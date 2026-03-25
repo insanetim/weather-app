@@ -4,10 +4,12 @@ import type {
   GetCurrentWeatherResponse,
 } from "../interfaces"
 
-const BASE_URL = "http://api.openweathermap.org/"
+type LatLon = {
+  lat: number
+  lon: number
+}
 
 const client = axios.create({
-  baseURL: BASE_URL,
   timeout: 10000,
   headers: {
     "Content-Type": "application/json",
@@ -29,20 +31,40 @@ client.interceptors.request.use(config => {
 
 export const getCoordinatesByLocationName = async (query: string) => {
   const response = await client.get<GetCoordinatesResponse[]>(
-    `geo/1.0/direct?q=${query}&limit=5`
+    "http://api.openweathermap.org/geo/1.0/direct",
+    {
+      params: {
+        query,
+        limit: 5,
+      },
+    }
   )
   return response.data
 }
 
-export const getCurrentWeather = async ({
-  lat,
-  lon,
-}: {
-  lat: number
-  lon: number
-}) => {
+export const getCurrentWeather = async ({ lat, lon }: LatLon) => {
   const response = await client.get<GetCurrentWeatherResponse>(
-    `data/2.5/weather?lat=${lat}&lon=${lon}`
+    "https://api.openweathermap.org/data/2.5/weather",
+    {
+      params: {
+        lat,
+        lon,
+      },
+    }
+  )
+  return response.data
+}
+
+export const getHourlyForecast = async ({ lat, lon }: LatLon) => {
+  const response = await client.get<GetCurrentWeatherResponse>(
+    "https://pro.openweathermap.org/data/2.5/forecast/hourly",
+    {
+      params: {
+        lat,
+        lon,
+        cnt: 24,
+      },
+    }
   )
   return response.data
 }
