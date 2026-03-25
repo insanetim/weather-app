@@ -1,7 +1,8 @@
 import axios from "axios"
 import type {
-  GetCoordinatesResponse,
-  GetCurrentWeatherResponse,
+  CoordinatesResponse,
+  CurrentWeatherResponse,
+  ForecastResponse,
 } from "../interfaces"
 
 type LatLon = {
@@ -30,7 +31,7 @@ client.interceptors.request.use(config => {
 })
 
 export const getCoordinatesByLocationName = async (query: string) => {
-  const response = await client.get<GetCoordinatesResponse[]>(
+  const response = await client.get<CoordinatesResponse[]>(
     "http://api.openweathermap.org/geo/1.0/direct",
     {
       params: {
@@ -43,7 +44,7 @@ export const getCoordinatesByLocationName = async (query: string) => {
 }
 
 export const getCurrentWeather = async ({ lat, lon }: LatLon) => {
-  const response = await client.get<GetCurrentWeatherResponse>(
+  const response = await client.get<CurrentWeatherResponse>(
     "https://api.openweathermap.org/data/2.5/weather",
     {
       params: {
@@ -56,13 +57,27 @@ export const getCurrentWeather = async ({ lat, lon }: LatLon) => {
 }
 
 export const getHourlyForecast = async ({ lat, lon }: LatLon) => {
-  const response = await client.get<GetCurrentWeatherResponse>(
+  const response = await client.get<ForecastResponse>(
     "https://pro.openweathermap.org/data/2.5/forecast/hourly",
     {
       params: {
         lat,
         lon,
         cnt: 24,
+      },
+    }
+  )
+  return response.data
+}
+
+export const getDailyForecast = async ({ lat, lon }: LatLon) => {
+  const response = await client.get<ForecastResponse>(
+    "https://api.openweathermap.org/data/2.5/forecast/daily",
+    {
+      params: {
+        lat,
+        lon,
+        cnt: 7,
       },
     }
   )

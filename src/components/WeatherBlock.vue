@@ -1,7 +1,7 @@
 <script setup lang="ts">
 import { Star, Trash2 } from "lucide-vue-next"
 import { ref, watch } from "vue"
-import type { GetCoordinatesResponse } from "../interfaces"
+import type { CoordinatesResponse } from "../interfaces"
 import { getCoordinatesByLocationName } from "../services/api"
 import CurrentWeather from "./CurrentWeather.vue"
 import SearchCityInput from "./SearchCityInput.vue"
@@ -26,13 +26,13 @@ const emit = defineEmits<{
 
 const query = ref("")
 const location = ref("")
-const dropdownItems = ref<GetCoordinatesResponse[]>([])
+const dropdownItems = ref<CoordinatesResponse[]>([])
 
 const handleSearchChange = (value: string) => {
   query.value = value
 }
 
-const handleCitySelected = (item: GetCoordinatesResponse) => {
+const handleCitySelected = (item: CoordinatesResponse) => {
   location.value = item.name
 }
 

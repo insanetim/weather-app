@@ -1,13 +1,13 @@
 <script setup lang="ts">
 import { Search } from "lucide-vue-next"
 import { ref } from "vue"
-import type { GetCoordinatesResponse } from "../interfaces"
+import type { CoordinatesResponse } from "../interfaces"
 import { debounce } from "../utils/debounce"
 
 interface Props {
-  dropdownItems: GetCoordinatesResponse[]
+  dropdownItems: CoordinatesResponse[]
   onSearchChange: (value: string) => void
-  onCitySelected: (item: GetCoordinatesResponse) => void
+  onCitySelected: (item: CoordinatesResponse) => void
 }
 
 const props = defineProps<Props>()
@@ -26,7 +26,7 @@ const handleInput = (event: Event) => {
   isOpen.value = true
 }
 
-const selectItem = (item: GetCoordinatesResponse) => {
+const selectItem = (item: CoordinatesResponse) => {
   searchValue.value = item.name
   isOpen.value = false
   props.onCitySelected(item)

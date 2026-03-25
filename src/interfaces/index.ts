@@ -1,4 +1,4 @@
-export interface GetCoordinatesResponse {
+export interface CoordinatesResponse {
   name: string
   local_names: Record<string, string>
   lat: number
@@ -7,28 +7,37 @@ export interface GetCoordinatesResponse {
   state: string
 }
 
-export interface GetCurrentWeatherResponse {
+type BaseResponse = {
+  cod: string
+  message: number
+}
+
+type MainType = {
+  temp: number
+  feels_like: number
+  pressure: number
+  humidity: number
+  temp_min: number
+  temp_max: number
+  sea_level: number
+  grnd_level: number
+}
+
+type WeatherType = {
+  id: number
+  main: string
+  description: string
+  icon: string
+}
+
+export type CurrentWeatherResponse = BaseResponse & {
   coord: {
     lon: number
     lat: number
   }
-  weather: {
-    id: number
-    main: string
-    description: string
-    icon: string
-  }
+  weather: WeatherType
   base: string
-  main: {
-    temp: number
-    feels_like: number
-    pressure: number
-    humidity: number
-    temp_min: number
-    temp_max: number
-    sea_level: number
-    grnd_level: number
-  }
+  main: MainType
   visibility: number
   wind: {
     speed: number
@@ -56,5 +65,49 @@ export interface GetCurrentWeatherResponse {
   timezone: number
   id: number
   name: string
-  cod: number
+}
+
+type ForecastItem = {
+  dt: number
+  main: MainType
+  weather: WeatherType
+  clouds: {
+    all: number
+  }
+  wind: {
+    speed: number
+    deg: number
+    gust: number
+  }
+  rain: {
+    "1h": number
+  }
+  snow: {
+    "1h": number
+  }
+  visibility: number
+  pop: number
+  sys: {
+    pod: string
+  }
+  dt_txt: string
+}
+
+type CityDetails = {
+  id: number
+  name: string
+  coord: {
+    lat: number
+    lon: number
+  }
+  country: string
+  timezone: number
+  sunrise: number
+  sunset: number
+}
+
+export type ForecastResponse = BaseResponse & {
+  cnt: number
+  list: ForecastItem[]
+  city: CityDetails
 }
