@@ -92,8 +92,3 @@ p {
   display: flex;
   flex-direction: column;
 }
-
-.content-section {
-  padding: 20px;
-  text-align: center;
-}

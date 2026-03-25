@@ -21,8 +21,10 @@ const handleTabChange = (value: string) => {
       default-tab="main"
       @tab-change="handleTabChange"
     >
-      <MainContent v-if="activeTab === 'main'" />
-      <FavouritesContent v-else-if="activeTab === 'favourites'" />
+      <keep-alive>
+        <MainContent v-if="activeTab === 'main'" />
+        <FavouritesContent v-else-if="activeTab === 'favourites'" />
+      </keep-alive>
     </Tabs>
   </div>
 </template>
