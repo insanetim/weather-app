@@ -3,15 +3,20 @@ import { Star, Trash2 } from "lucide-vue-next"
 import { ref, watch } from "vue"
 import type { GetCoordinatesResponse } from "../interfaces"
 import { getCoordinatesByLocationName } from "../services/api"
+import CurrentWeather from "./CurrentWeather.vue"
 import SearchCityInput from "./SearchCityInput.vue"
 import Button from "./UI/Button.vue"
+import WeatherChart from "./WeatherChart.vue"
+import WeekForecast from "./WeekForecast.vue"
 
 interface Props {
   removable?: boolean
+  withSearch?: boolean
 }
 
 withDefaults(defineProps<Props>(), {
   removable: true,
+  withSearch: true,
 })
 
 const emit = defineEmits<{
@@ -44,12 +49,19 @@ watch(query, async newQuery => {
     dropdownItems.value = []
   }
 })
+
+const activeTab = ref("current")
+
+const handleTabChange = (value: string) => {
+  activeTab.value = value
+}
 </script>
 
 <template>
   <div class="weather-block">
     <div class="search-row">
       <SearchCityInput
+        v-if="withSearch"
         :dropdown-items="dropdownItems"
         :on-search-change="handleSearchChange"
         :on-city-selected="handleCitySelected"
@@ -74,22 +86,38 @@ watch(query, async newQuery => {
         </Button>
       </div>
     </div>
-    <div class="weather-header">
-      <h3>{{ location || "Weather Location" }}</h3>
-      <div class="header-actions">
-        <div class="temperature">25°C</div>
+
+    <div class="card-container">
+      <div class="tab-buttons">
+        <button
+          v-for="tab in [
+            { label: 'Today', value: 'current' },
+            { label: 'Week', value: 'week' },
+          ]"
+          :key="tab.value"
+          :class="['tab-button', { active: activeTab === tab.value }]"
+          @click="handleTabChange(tab.value)"
+        >
+          {{ tab.label }}
+        </button>
+      </div>
+      <div class="tab-content">
+        <keep-alive>
+          <CurrentWeather v-if="activeTab === 'current'" />
+          <WeekForecast v-else-if="activeTab === 'week'" />
+        </keep-alive>
       </div>
     </div>
+
+    <WeatherChart />
   </div>
 </template>
 
 <style scoped>
 .search-row {
   display: flex;
-  justify-content: space-between;
   align-items: center;
   gap: 12px;
-  margin-bottom: 16px;
 }
 
 .search-row .search-city-input {
@@ -99,6 +127,7 @@ watch(query, async newQuery => {
 .action-buttons {
   display: flex;
   gap: 8px;
+  margin-left: auto;
 }
 
 .action-icon {
@@ -106,7 +135,53 @@ watch(query, async newQuery => {
   height: 20px;
 }
 
+.card-container {
+  border: 1px solid var(--border);
+  position: relative;
+  border-radius: 8px;
+  padding: 16px;
+  background-color: var(--bg);
+}
+
+.tab-buttons {
+  position: absolute;
+  top: 8px;
+  left: 8px;
+  display: flex;
+  gap: 4px;
+  z-index: 1;
+}
+
+.tab-button {
+  padding: 6px 12px;
+  border: 1px solid var(--border);
+  background-color: var(--bg);
+  color: var(--text);
+  border-radius: 4px;
+  cursor: pointer;
+  font-size: 14px;
+  transition: all 0.2s ease;
+}
+
+.tab-button:hover {
+  background-color: var(--accent-bg);
+  color: var(--accent);
+}
+
+.tab-button.active {
+  background-color: var(--accent);
+  color: white;
+  border-color: var(--accent);
+}
+
+.tab-content {
+  margin-top: 56px;
+}
+
 .weather-block {
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
   border: 1px solid var(--border);
   border-radius: 8px;
   padding: 16px;
