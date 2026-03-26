@@ -191,6 +191,17 @@ watch(
   { immediate: true }
 )
 
+// Watch for initialCity prop changes (for async location detection)
+watch(
+  () => props.initialCity,
+  newInitialCity => {
+    if (newInitialCity && !city.value) {
+      city.value = newInitialCity
+    }
+  },
+  { immediate: true }
+)
+
 const handleToggleFavorite = () => {
   if (city.value) {
     // Check if adding would exceed limit

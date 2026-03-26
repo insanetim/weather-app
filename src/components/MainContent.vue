@@ -1,7 +1,8 @@
 <script setup lang="ts">
 import { Plus } from "lucide-vue-next"
 import { nanoid } from "nanoid"
-import { ref } from "vue"
+import { onMounted, ref } from "vue"
+import { getLocationByIP } from "../services/geolocation"
 import AnimatedList from "./UI/AnimatedList.vue"
 import Button from "./UI/Button.vue"
 import Modal from "./UI/Modal.vue"
@@ -11,6 +12,7 @@ const weatherBlocks = ref([nanoid(5)])
 const maxBlocks = 5
 const showDeleteModal = ref(false)
 const blockToDelete = ref<string | null>(null)
+const userLocation = ref<any>(null)
 
 const addWeatherBlock = () => {
   if (weatherBlocks.value.length < maxBlocks) {
@@ -41,6 +43,18 @@ const closeDeleteModal = () => {
 const canAddMore = () => {
   return weatherBlocks.value.length < maxBlocks
 }
+
+// Initialize user location on component mount
+onMounted(async () => {
+  try {
+    const location = await getLocationByIP()
+    if (location) {
+      userLocation.value = location
+    }
+  } catch (error) {
+    console.error("Failed to get user location:", error)
+  }
+})
 </script>
 
 <template>
@@ -48,9 +62,10 @@ const canAddMore = () => {
     <div class="weather-blocks">
       <AnimatedList>
         <WeatherBlock
-          v-for="block in weatherBlocks"
+          v-for="(block, index) in weatherBlocks"
           :key="block"
           :removable="weatherBlocks.length > 1"
+          :initial-city="index === 0 ? userLocation : undefined"
           @remove="confirmDelete(block)"
         />
       </AnimatedList>
