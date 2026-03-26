@@ -63,7 +63,7 @@ watch(query, async newQuery => {
   }
 })
 
-const activeView = ref("current")
+const activeView = ref<"current" | "forecast">("current")
 const currentWeather = ref<CurrentWeatherResponse | null>(null)
 const forecastData = ref<ForecastResponse | null>(null)
 const currentWeatherTimestamp = ref<Date | null>(null)
@@ -71,7 +71,7 @@ const forecastDataTimestamp = ref<Date | null>(null)
 const loading = ref(false)
 const error = ref<string | null>(null)
 
-const handleTabChange = (value: string) => {
+const handleTabChange = (value: "current" | "forecast") => {
   activeView.value = value
 }
 
@@ -290,8 +290,8 @@ const isCurrentCityFavorite = computed(() => {
       <div class="view-buttons">
         <Button
           v-for="view in [
-            { label: 'Today', value: 'current' },
-            { label: '5 Day Forecast', value: 'forecast' },
+            { label: 'Today', value: 'current' as const },
+            { label: '5 Day Forecast', value: 'forecast' as const },
           ]"
           :key="view.value"
           @click="handleTabChange(view.value)"
@@ -319,7 +319,11 @@ const isCurrentCityFavorite = computed(() => {
       />
     </div>
 
-    <WeatherChart />
+    <WeatherChart
+      :active-view="activeView"
+      :current-weather="currentWeather"
+      :forecast-data="forecastData"
+    />
 
     <!-- Favorites Limit Modal -->
     <Modal
