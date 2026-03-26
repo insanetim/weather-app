@@ -2,6 +2,7 @@
 import { MapPin } from "lucide-vue-next"
 import { computed } from "vue"
 import { useFavoritesStore } from "../stores/favorites"
+import AnimatedList from "./UI/AnimatedList.vue"
 import WeatherBlock from "./WeatherBlock.vue"
 
 const favoritesStore = useFavoritesStore()
@@ -26,10 +27,7 @@ const hasFavorites = computed(() => favoritesStore.favorites.length > 0)
       v-else
       class="weather-blocks"
     >
-      <TransitionGroup
-        name="weather-block"
-        tag="div"
-      >
+      <AnimatedList>
         <WeatherBlock
           v-for="favorite in favoritesStore.favorites"
           :key="favorite.id"
@@ -37,7 +35,7 @@ const hasFavorites = computed(() => favoritesStore.favorites.length > 0)
           :removable="false"
           :with-search="false"
         />
-      </TransitionGroup>
+      </AnimatedList>
     </div>
 
     <div
@@ -121,26 +119,6 @@ const hasFavorites = computed(() => favoritesStore.favorites.length > 0)
   display: flex;
   flex-direction: column;
   gap: 16px;
-}
-
-/* Transition animations */
-.weather-block-enter-active,
-.weather-block-leave-active {
-  transition: all 0.3s ease;
-}
-
-.weather-block-enter-from {
-  opacity: 0;
-  transform: translateY(-20px);
-}
-
-.weather-block-leave-to {
-  opacity: 0;
-  transform: translateX(20px);
-}
-
-.weather-block-move {
-  transition: transform 0.3s ease;
 }
 
 .favorites-footer {

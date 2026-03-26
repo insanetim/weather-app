@@ -2,6 +2,7 @@
 import { Plus } from "lucide-vue-next"
 import { nanoid } from "nanoid"
 import { ref } from "vue"
+import AnimatedList from "./UI/AnimatedList.vue"
 import Button from "./UI/Button.vue"
 import Modal from "./UI/Modal.vue"
 import WeatherBlock from "./WeatherBlock.vue"
@@ -45,17 +46,14 @@ const canAddMore = () => {
 <template>
   <div>
     <div class="weather-blocks">
-      <TransitionGroup
-        name="weather-block"
-        tag="div"
-      >
+      <AnimatedList>
         <WeatherBlock
           v-for="block in weatherBlocks"
           :key="block"
           :removable="weatherBlocks.length > 1"
           @remove="confirmDelete(block)"
         />
-      </TransitionGroup>
+      </AnimatedList>
     </div>
 
     <div class="button-section">
@@ -115,26 +113,6 @@ const canAddMore = () => {
   display: flex;
   flex-direction: column;
   gap: 16px;
-}
-
-/* Transition animations */
-.weather-block-enter-active,
-.weather-block-leave-active {
-  transition: all 0.3s ease;
-}
-
-.weather-block-enter-from {
-  opacity: 0;
-  transform: translateY(-20px);
-}
-
-.weather-block-leave-to {
-  opacity: 0;
-  transform: translateX(20px);
-}
-
-.weather-block-move {
-  transition: transform 0.3s ease;
 }
 
 .limit-message {
