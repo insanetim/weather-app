@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import { Star, Trash2 } from "lucide-vue-next"
+import { RefreshCw, Star, Trash2 } from "lucide-vue-next"
 import { computed, onMounted, ref, watch } from "vue"
 import type {
   CoordinatesResponse,
@@ -66,6 +66,8 @@ watch(query, async newQuery => {
 const activeView = ref("current")
 const currentWeather = ref<CurrentWeatherResponse | null>(null)
 const forecastData = ref<ForecastResponse | null>(null)
+const currentWeatherTimestamp = ref<Date | null>(null)
+const forecastDataTimestamp = ref<Date | null>(null)
 const loading = ref(false)
 const error = ref<string | null>(null)
 
@@ -85,6 +87,7 @@ const loadCurrentWeather = async () => {
       lon: city.value.lon,
     })
     currentWeather.value = data
+    currentWeatherTimestamp.value = new Date()
   } catch (err) {
     error.value = "Failed to load current weather"
     console.error(err)
@@ -105,6 +108,7 @@ const loadForecast = async () => {
       lon: city.value.lon,
     })
     forecastData.value = data
+    forecastDataTimestamp.value = new Date()
   } catch (err) {
     error.value = "Failed to load weekly forecast"
     console.error(err)
@@ -213,6 +217,16 @@ onMounted(() => {
   }
 })
 
+const handleRefresh = async () => {
+  if (!city.value) return
+
+  if (activeView.value === "current") {
+    await loadCurrentWeather()
+  } else {
+    await loadForecast()
+  }
+}
+
 const isCurrentCityFavorite = computed(() => {
   return city.value ? favoritesStore.isFavorite(city.value) : false
 })
@@ -228,6 +242,14 @@ const isCurrentCityFavorite = computed(() => {
         :on-city-selected="handleCitySelected"
       />
       <div class="action-buttons">
+        <Button
+          @click="handleRefresh"
+          variant="outlined"
+          color="primary"
+          title="Refresh weather data"
+        >
+          <RefreshCw class="action-icon" />
+        </Button>
         <Button
           @click="handleToggleFavorite"
           variant="outlined"
@@ -278,6 +300,11 @@ const isCurrentCityFavorite = computed(() => {
         :weather-description="weatherDataComputed?.weatherDescription"
         :loading="loading"
         :error="error || undefined"
+        :timestamp="
+          activeView === 'current'
+            ? currentWeatherTimestamp
+            : forecastDataTimestamp
+        "
       />
     </div>
 

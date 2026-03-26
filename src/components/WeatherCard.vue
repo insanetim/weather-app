@@ -1,4 +1,5 @@
 <script setup lang="ts">
+import { formatTimestamp, getTemperature } from "../utils/formatters"
 import ErrorAlert from "./UI/ErrorAlert.vue"
 import Loading from "./UI/Loading.vue"
 
@@ -12,12 +13,10 @@ interface Props {
   weatherDescription?: string
   loading?: boolean
   error?: string
+  timestamp?: Date | null
 }
 
 const props = defineProps<Props>()
-
-// Helper functions for weather data
-const getTemperature = (temp: number) => Math.round(temp - 273.15)
 </script>
 
 <template>
@@ -60,6 +59,15 @@ const getTemperature = (temp: number) => Math.round(temp - 273.15)
             >
           </div>
         </div>
+        <div
+          v-if="timestamp"
+          class="timestamp"
+        >
+          {{ formatTimestamp(timestamp) }}
+        </div>
+      </div>
+
+      <div class="weather-main">
         <div class="temperature-display">
           <div
             v-if="temperature"
@@ -74,10 +82,7 @@ const getTemperature = (temp: number) => Math.round(temp - 273.15)
             Feels like {{ getTemperature(feelsLike) }}°C
           </div>
         </div>
-      </div>
-
-      <div class="weather-main">
-        <div class="weather-icon-container">
+        <div class="weather-info">
           <img
             v-if="weatherIcon"
             :src="`https://openweathermap.org/img/wn/${weatherIcon}@2x.png`"
@@ -159,7 +164,7 @@ const getTemperature = (temp: number) => Math.round(temp - 273.15)
 }
 
 .temperature-display {
-  text-align: right;
+  text-align: left;
 }
 
 .temperature {
@@ -177,10 +182,11 @@ const getTemperature = (temp: number) => Math.round(temp - 273.15)
 
 .weather-main {
   display: flex;
-  justify-content: center;
+  justify-content: space-between;
+  align-items: flex-end;
 }
 
-.weather-icon-container {
+.weather-info {
   text-align: center;
 }
 
@@ -194,6 +200,12 @@ const getTemperature = (temp: number) => Math.round(temp - 273.15)
   color: var(--text);
   margin-top: 8px;
   text-transform: capitalize;
+}
+
+.timestamp {
+  font-size: 14px;
+  color: var(--text-secondary);
+  text-align: right;
 }
 
 @media (max-width: 768px) {
