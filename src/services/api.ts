@@ -6,7 +6,10 @@ import type {
   LatLon,
 } from "../interfaces"
 
+const BASE_URL = "https://api.openweathermap.org/"
+
 const client = axios.create({
+  baseURL: BASE_URL,
   timeout: 10000,
   headers: {
     "Content-Type": "application/json",
@@ -27,18 +30,15 @@ client.interceptors.request.use(config => {
 })
 
 export const getCoordinatesByLocationName = async (query: string) => {
-  const response = await client.get<CoordinatesResponse[]>(
-    "https://api.openweathermap.org/geo/1.0/direct",
-    {
-      params: { q: query, limit: 5 },
-    }
-  )
+  const response = await client.get<CoordinatesResponse[]>("geo/1.0/direct", {
+    params: { q: query, limit: 5 },
+  })
   return response.data
 }
 
 export const getCurrentWeather = async ({ lat, lon }: LatLon) => {
   const response = await client.get<CurrentWeatherResponse>(
-    "https://api.openweathermap.org/data/2.5/weather",
+    "data/2.5/weather",
     {
       params: { lat, lon },
     }
@@ -47,11 +47,8 @@ export const getCurrentWeather = async ({ lat, lon }: LatLon) => {
 }
 
 export const getForecast = async ({ lat, lon }: LatLon) => {
-  const response = await client.get<ForecastResponse>(
-    "https://api.openweathermap.org/data/2.5/forecast",
-    {
-      params: { lat, lon },
-    }
-  )
+  const response = await client.get<ForecastResponse>("data/2.5/forecast", {
+    params: { lat, lon },
+  })
   return response.data
 }

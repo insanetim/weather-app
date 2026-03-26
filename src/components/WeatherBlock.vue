@@ -324,6 +324,7 @@ const isCurrentCityFavorite = computed(() => {
       :current-weather="currentWeather"
       :forecast-data="forecastData"
       :loading="loading"
+      :error="error"
     />
 
     <!-- Favorites Limit Modal -->

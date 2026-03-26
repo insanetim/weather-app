@@ -16,6 +16,7 @@ import {
   generate24HourTemperatureData,
 } from "../utils/chartData"
 import { getTemperature } from "../utils/formatters"
+import ErrorAlert from "./UI/ErrorAlert.vue"
 import Loading from "./UI/Loading.vue"
 
 ChartJS.register(CategoryScale, LinearScale, BarElement, Title, Tooltip)
@@ -25,6 +26,7 @@ interface Props {
   currentWeather: CurrentWeatherResponse | null
   forecastData: ForecastResponse | null
   loading: boolean
+  error?: string | null
 }
 
 const props = defineProps<Props>()
@@ -150,6 +152,10 @@ watch(
     <Loading
       v-if="loading"
       message="Loading chart data..."
+    />
+    <ErrorAlert
+      v-else-if="error"
+      :message="error"
     />
     <Bar
       v-else-if="chartData.labels.length > 0"
