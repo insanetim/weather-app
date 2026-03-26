@@ -1,6 +1,6 @@
 <script setup lang="ts">
 import { ref } from "vue"
-import FavouritesContent from "./FavouritesContent.vue"
+import FavouritesContent from "./FavoritesContent.vue"
 import MainContent from "./MainContent.vue"
 import Tabs from "./UI/Tabs.vue"
 

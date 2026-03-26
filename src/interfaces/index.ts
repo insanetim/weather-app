@@ -99,3 +99,7 @@ export type ForecastResponse = {
   list: ForecastItem[]
   city: CityDetails
 }
+
+export type FavoriteCity = CoordinatesResponse & {
+  id: string
+}

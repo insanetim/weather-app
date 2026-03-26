@@ -1,22 +1,23 @@
 <script setup lang="ts">
 import { Plus } from "lucide-vue-next"
+import { nanoid } from "nanoid"
 import { ref } from "vue"
 import Button from "./UI/Button.vue"
 import Modal from "./UI/Modal.vue"
 import WeatherBlock from "./WeatherBlock.vue"
 
-const weatherBlocks = ref([Date.now()])
+const weatherBlocks = ref([nanoid(5)])
 const maxBlocks = 5
 const showDeleteModal = ref(false)
-const blockToDelete = ref<number | null>(null)
+const blockToDelete = ref<string | null>(null)
 
 const addWeatherBlock = () => {
   if (weatherBlocks.value.length < maxBlocks) {
-    weatherBlocks.value.push(Date.now())
+    weatherBlocks.value.push(nanoid(5))
   }
 }
 
-const confirmDelete = (id: number) => {
+const confirmDelete = (id: string) => {
   blockToDelete.value = id
   showDeleteModal.value = true
 }
@@ -51,6 +52,7 @@ const canAddMore = () => {
         <WeatherBlock
           v-for="block in weatherBlocks"
           :key="block"
+          :block-id="block"
           :removable="weatherBlocks.length > 1"
           @remove="confirmDelete(block)"
         />

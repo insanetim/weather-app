@@ -11,29 +11,37 @@ import {
   getCurrentWeather,
   getForecast,
 } from "../services/api"
+import { useFavoritesStore } from "../stores/favorites"
 import SearchCityInput from "./SearchCityInput.vue"
 import Button from "./UI/Button.vue"
+import Modal from "./UI/Modal.vue"
 import WeatherCard from "./WeatherCard.vue"
 import WeatherChart from "./WeatherChart.vue"
 
 interface Props {
   removable?: boolean
   withSearch?: boolean
+  blockId?: string
+  initialCity?: CoordinatesResponse
 }
 
-withDefaults(defineProps<Props>(), {
+const props = withDefaults(defineProps<Props>(), {
   removable: true,
   withSearch: true,
+  blockId: "",
+  initialCity: undefined,
 })
 
 const emit = defineEmits<{
   remove: []
-  addToFavorites: []
 }>()
 
 const query = ref("")
 const city = ref<CoordinatesResponse | null>(null)
 const dropdownItems = ref<CoordinatesResponse[]>([])
+
+const favoritesStore = useFavoritesStore()
+const showLimitModal = ref(false)
 
 const handleSearchChange = (value: string) => {
   query.value = value
@@ -181,14 +189,34 @@ watch(
   { immediate: true }
 )
 
-onMounted(async () => {
-  if (!city.value) return
+const handleToggleFavorite = () => {
+  if (city.value && props.blockId) {
+    // Check if adding would exceed limit
+    if (
+      !favoritesStore.isFavorite(props.blockId) &&
+      favoritesStore.favorites.length >= favoritesStore.MAX_FAVORITES
+    ) {
+      showLimitModal.value = true
+      return
+    }
 
-  if (activeView.value === "current") {
-    await loadCurrentWeather()
-  } else {
-    await loadForecast()
+    favoritesStore.toggleFavorite(city.value, props.blockId)
   }
+}
+
+const closeLimitModal = () => {
+  showLimitModal.value = false
+}
+
+onMounted(() => {
+  // Initialize with favorite city if provided
+  if (props.initialCity) {
+    city.value = props.initialCity
+  }
+})
+
+const isCurrentCityFavorite = computed(() => {
+  return props.blockId ? favoritesStore.isFavorite(props.blockId) : false
 })
 </script>
 
@@ -203,12 +231,17 @@ onMounted(async () => {
       />
       <div class="action-buttons">
         <Button
-          @click="emit('addToFavorites')"
+          @click="handleToggleFavorite"
           variant="outlined"
           color="primary"
-          title="Add to favorites"
+          :title="
+            isCurrentCityFavorite ? 'Remove from favorites' : 'Add to favorites'
+          "
         >
-          <Star class="action-icon" />
+          <Star
+            class="action-icon"
+            :class="{ filled: isCurrentCityFavorite }"
+          />
         </Button>
         <Button
           v-if="removable"
@@ -251,6 +284,21 @@ onMounted(async () => {
     </div>
 
     <WeatherChart />
+
+    <!-- Favorites Limit Modal -->
+    <Modal
+      :open="showLimitModal"
+      title="Favorites Limit Reached"
+      :on-cancel="closeLimitModal"
+      cancel-text="Close"
+      @close="closeLimitModal"
+    >
+      <p>
+        You have reached the maximum limit of
+        {{ favoritesStore.MAX_FAVORITES }} favorite cities. Remove some existing
+        favorites to add new ones.
+      </p>
+    </Modal>
   </div>
 </template>
 
@@ -274,6 +322,10 @@ onMounted(async () => {
 .action-icon {
   width: 20px;
   height: 20px;
+}
+
+.action-icon.filled {
+  fill: currentColor;
 }
 
 .placeholder-text {
