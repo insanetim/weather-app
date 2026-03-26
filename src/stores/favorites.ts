@@ -18,15 +18,19 @@ export const useFavoritesStore = defineStore("useFavoritesStore", () => {
     localStorageService.setItem(STORAGE_KEY, favorites.value)
   }
 
-  const addFavorite = (city: Omit<FavoriteCity, "id">, id?: string) => {
-    if (!id) {
-      return
-    }
+  const generateCityId = (city: Omit<FavoriteCity, "id">) => {
+    return `${city.name}-${city.lat}-${city.lon}`
+      .toLowerCase()
+      .replace(/\s+/g, "-")
+  }
 
+  const addFavorite = (city: Omit<FavoriteCity, "id">) => {
     // Check if limit would be exceeded
     if (favorites.value.length >= MAX_FAVORITES) {
       return
     }
+
+    const id = generateCityId(city)
 
     // Check if favorite with this id already exists
     const existingIndex = favorites.value.findIndex(fav => fav.id === id)
@@ -52,19 +56,17 @@ export const useFavoritesStore = defineStore("useFavoritesStore", () => {
     }
   }
 
-  const isFavorite = (id?: string) => {
-    if (!id) return false
+  const isFavorite = (city: Omit<FavoriteCity, "id">) => {
+    const id = generateCityId(city)
     return favorites.value.some(fav => fav.id === id)
   }
 
-  const toggleFavorite = (city: Omit<FavoriteCity, "id">, id?: string) => {
-    if (isFavorite(id)) {
-      const existing = favorites.value.find(fav => fav.id === id)
-      if (existing) {
-        removeFavorite(existing.id)
-      }
+  const toggleFavorite = (city: Omit<FavoriteCity, "id">) => {
+    if (isFavorite(city)) {
+      const id = generateCityId(city)
+      removeFavorite(id)
     } else {
-      addFavorite(city, id)
+      addFavorite(city)
     }
   }
 

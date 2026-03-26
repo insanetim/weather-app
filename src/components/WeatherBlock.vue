@@ -21,14 +21,12 @@ import WeatherChart from "./WeatherChart.vue"
 interface Props {
   removable?: boolean
   withSearch?: boolean
-  blockId?: string
   initialCity?: CoordinatesResponse
 }
 
 const props = withDefaults(defineProps<Props>(), {
   removable: true,
   withSearch: true,
-  blockId: "",
   initialCity: undefined,
 })
 
@@ -190,17 +188,17 @@ watch(
 )
 
 const handleToggleFavorite = () => {
-  if (city.value && props.blockId) {
+  if (city.value) {
     // Check if adding would exceed limit
     if (
-      !favoritesStore.isFavorite(props.blockId) &&
+      !favoritesStore.isFavorite(city.value) &&
       favoritesStore.favorites.length >= favoritesStore.MAX_FAVORITES
     ) {
       showLimitModal.value = true
       return
     }
 
-    favoritesStore.toggleFavorite(city.value, props.blockId)
+    favoritesStore.toggleFavorite(city.value)
   }
 }
 
@@ -216,7 +214,7 @@ onMounted(() => {
 })
 
 const isCurrentCityFavorite = computed(() => {
-  return props.blockId ? favoritesStore.isFavorite(props.blockId) : false
+  return city.value ? favoritesStore.isFavorite(city.value) : false
 })
 </script>
 

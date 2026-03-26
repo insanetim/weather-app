@@ -52,7 +52,6 @@ const canAddMore = () => {
         <WeatherBlock
           v-for="block in weatherBlocks"
           :key="block"
-          :block-id="block"
           :removable="weatherBlocks.length > 1"
           @remove="confirmDelete(block)"
         />

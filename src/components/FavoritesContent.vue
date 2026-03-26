@@ -33,7 +33,6 @@ const hasFavorites = computed(() => favoritesStore.favorites.length > 0)
         <WeatherBlock
           v-for="favorite in favoritesStore.favorites"
           :key="favorite.id"
-          :block-id="favorite.id"
           :initial-city="favorite"
           :removable="false"
           :with-search="false"
