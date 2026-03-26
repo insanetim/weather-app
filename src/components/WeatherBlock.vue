@@ -323,6 +323,7 @@ const isCurrentCityFavorite = computed(() => {
       :active-view="activeView"
       :current-weather="currentWeather"
       :forecast-data="forecastData"
+      :loading="loading"
     />
 
     <!-- Favorites Limit Modal -->
@@ -347,6 +348,7 @@ const isCurrentCityFavorite = computed(() => {
   display: flex;
   align-items: center;
   gap: 12px;
+  min-height: 44px;
 }
 
 .search-row .search-city-input {
