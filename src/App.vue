@@ -53,33 +53,49 @@ async function getCity(city) {
 
 <template>
   <main class="main">
-    <Error :error="errorDisplay" />
-    <div v-if="data" class="stat-data">
-      <div class="stat-list">
-        <Stat v-for="item in dataModified" :key="item.label" v-bind="item" />
+    <div class="left"></div>
+    <div class="right">
+      <Error :error="errorDisplay" />
+      <div v-if="data" class="stat-data">
+        <div class="stat-list">
+          <Stat v-for="item in dataModified" :key="item.label" v-bind="item" />
+        </div>
+        <div class="day-card-list">
+          <DayCard
+            v-for="(item, index) in data.forecast.forecastday"
+            :key="item.date"
+            :condition-icon="item.day.condition.icon"
+            :condition-text="item.day.condition.text"
+            :temp="item.day.avgtemp_c"
+            :date="new Date(item.date)"
+            :is-active="activeIndex === index"
+            @click="activeIndex = index"
+          />
+        </div>
       </div>
-      <div class="day-card-list">
-        <DayCard
-          v-for="(item, index) in data.forecast.forecastday"
-          :key="item.date"
-          :condition-icon="item.day.condition.icon"
-          :condition-text="item.day.condition.text"
-          :temp="item.day.avgtemp_c"
-          :date="new Date(item.date)"
-          :is-active="activeIndex === index"
-          @click="activeIndex = index"
-        />
-      </div>
+      <CitySelect @select-city="getCity" />
     </div>
-    <CitySelect @select-city="getCity" />
   </main>
 </template>
 
 <style scoped>
 .main {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+.left {
+  width: 500px;
+  height: 680px;
+  border-radius: 30px;
+  background-image: url("./assets/bg.png");
+  background-repeat: no-repeat;
+  background-size: cover;
+}
+.right {
   background: var(--color-bg-main);
   padding: 60px 50px;
-  border-radius: 25px;
+  border-radius: 0 25px 25px 0;
 }
 .stat-data {
   display: flex;
