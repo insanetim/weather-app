@@ -1,6 +1,7 @@
 <script setup>
 import { computed, ref } from "vue";
 import CitySelect from "./components/CitySelect.vue";
+import DayCard from "./components/DayCard.vue";
 import Error from "./components/Error.vue";
 import Stat from "./components/Stat.vue";
 
@@ -55,6 +56,7 @@ async function getCity(city) {
 <template>
   <main class="main">
     <Error :error="errorDisplay" />
+    <DayCard :weather-code="1000" temp="20" :date="new Date()" />
     <Stat v-for="item in dataModified" :key="item.label" v-bind="item" />
     <CitySelect @select-city="getCity" />
   </main>
