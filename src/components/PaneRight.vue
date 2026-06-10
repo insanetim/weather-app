@@ -1,5 +1,6 @@
 <script setup>
 import { computed } from "vue";
+import { errorMap } from "../constants.js";
 import CitySelect from "./CitySelect.vue";
 import DayCard from "./DayCard.vue";
 import Error from "./Error.vue";
@@ -12,8 +13,6 @@ const { error, data, activeIndex } = defineProps({
 });
 
 const emit = defineEmits(["selectIndex"]);
-
-const errorMap = new Map([[1006, "Указанный город не найден"]]);
 
 const errorDisplay = computed(() => {
   if (!error) return null;

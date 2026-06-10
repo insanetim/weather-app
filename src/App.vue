@@ -1,13 +1,14 @@
 <script setup>
 import { provide, ref, watch } from "vue";
 import PaneRight from "./components/PaneRight.vue";
+import { API_KEY, API_URL, cityProvide } from "./constants.js";
 
 const data = ref();
 const error = ref();
 const activeIndex = ref(0);
 const city = ref("Dnipro");
 
-provide("city", city);
+provide(cityProvide, city);
 
 watch(
   city,
@@ -23,12 +24,10 @@ async function getCity(city) {
   const params = new URLSearchParams({
     q: city,
     lang: "ru",
-    key: import.meta.env.VITE_API_KEY,
+    key: API_KEY,
     days: 3,
   });
-  const res = await fetch(
-    `${import.meta.env.VITE_API_URL}/forecast.json?${params.toString()}`,
-  );
+  const res = await fetch(`${API_URL}/forecast.json?${params.toString()}`);
   if (res.status !== 200) {
     error.value = await res.json();
     data.value = null;
