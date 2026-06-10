@@ -4,11 +4,12 @@ const { conditionIcon, conditionText, temp, date } = defineProps({
   conditionText: String,
   temp: Number,
   date: Date,
+  isActive: Boolean,
 });
 </script>
 
 <template>
-  <button class="day-card">
+  <button class="day-card" :class="{ active: isActive }">
     <img
       class="day-card__icon"
       :src="conditionIcon"
@@ -40,6 +41,10 @@ const { conditionIcon, conditionText, temp, date } = defineProps({
 }
 .day-card:hover {
   background-color: #3a434f;
+}
+.day-card.active {
+  color: var(--color-primary-inverted);
+  background-color: var(--color-primary);
 }
 .day-card__icon {
   width: 55px;
