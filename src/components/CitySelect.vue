@@ -29,15 +29,16 @@ function edit() {
 
 <template>
   <div class="city-select">
-    <div v-show="isEdited" class="city-input">
+    <div v-if="isEdited" class="city-input">
       <Input
         v-model="city"
+        v-focus
         placeholder="Введите город"
         @keyup.enter="select()"
       />
       <Button @click="select()">Сохранить</Button>
     </div>
-    <Button v-show="!isEdited" @click="edit()">
+    <Button v-else @click="edit()">
       <IconLocation />
       Изменить город
     </Button>
