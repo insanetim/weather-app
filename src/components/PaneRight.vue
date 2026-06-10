@@ -11,7 +11,7 @@ const { error, data, activeIndex } = defineProps({
   activeIndex: Number,
 });
 
-const emit = defineEmits(["selectIndex", "selectCity"]);
+const emit = defineEmits(["selectIndex"]);
 
 const errorMap = new Map([[1006, "Указанный город не найден"]]);
 
@@ -61,7 +61,7 @@ const statData = computed(() => {
         />
       </div>
     </div>
-    <CitySelect @select-city="(city) => emit('selectCity', city)" />
+    <CitySelect />
   </div>
 </template>
 

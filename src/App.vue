@@ -1,10 +1,23 @@
 <script setup>
-import { ref } from "vue";
+import { provide, ref, watch } from "vue";
 import PaneRight from "./components/PaneRight.vue";
 
 const data = ref();
 const error = ref();
 const activeIndex = ref(0);
+const city = ref("Dnipro");
+
+provide("city", city);
+
+watch(
+  city,
+  () => {
+    getCity(city.value);
+  },
+  {
+    immediate: true,
+  },
+);
 
 async function getCity(city) {
   const params = new URLSearchParams({
@@ -34,7 +47,6 @@ async function getCity(city) {
       :error
       :active-index="activeIndex"
       @select-index="(i) => (activeIndex = i)"
-      @select-city="(city) => getCity(city)"
     />
   </main>
 </template>
