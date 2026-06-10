@@ -1,10 +1,7 @@
 <script setup>
-import IconCloud from "../icons/weather/IconCloud.vue";
-import IconRain from "../icons/weather/IconRain.vue";
-import IconSun from "../icons/weather/IconSun.vue";
-
-const { weatherCode, temp, date } = defineProps({
-  weatherCode: Number,
+const { conditionIcon, conditionText, temp, date } = defineProps({
+  conditionIcon: String,
+  conditionText: String,
   temp: Number,
   date: Date,
 });
@@ -12,9 +9,12 @@ const { weatherCode, temp, date } = defineProps({
 
 <template>
   <button class="day-card">
-    <IconSun v-if="weatherCode === 1000" />
-    <IconCloud v-if="weatherCode === 1003" />
-    <IconRain v-if="weatherCode === 1009" />
+    <img
+      class="day-card__icon"
+      :src="conditionIcon"
+      :alt="conditionText"
+      :title="conditionText"
+    />
     <div class="day-card__day">
       {{ date.toLocaleDateString("ru-RU", { weekday: "short" }) }}
     </div>
@@ -24,6 +24,7 @@ const { weatherCode, temp, date } = defineProps({
 
 <style scoped>
 .day-card {
+  width: 100%;
   display: flex;
   flex-direction: column;
   align-items: center;
@@ -39,6 +40,10 @@ const { weatherCode, temp, date } = defineProps({
 }
 .day-card:hover {
   background-color: #3a434f;
+}
+.day-card__icon {
+  width: 55px;
+  height: auto;
 }
 .day-card__day {
   font-size: 20px;
