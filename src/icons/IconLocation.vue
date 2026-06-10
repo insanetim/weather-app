@@ -1,12 +1,17 @@
-<script setup></script>
+<script setup>
+const { size = 33 } = defineProps({
+  size: Number,
+});
+</script>
 
 <template>
   <svg
+    xmlns="http://www.w3.org/2000/svg"
     width="33"
     height="33"
     viewBox="0 0 33 33"
     fill="none"
-    xmlns="http://www.w3.org/2000/svg"
+    :style="{ width: `${size}px`, height: 'auto' }"
   >
     <path
       fill-rule="evenodd"

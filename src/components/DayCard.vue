@@ -47,6 +47,7 @@ const { conditionIcon, conditionText, temp, date } = defineProps({
   background-color: var(--color-primary);
 }
 .day-card__icon {
+  display: block;
   width: 55px;
   height: auto;
 }

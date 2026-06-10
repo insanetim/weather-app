@@ -41,35 +41,28 @@ const statData = computed(() => {
 </script>
 
 <template>
-  <div class="right">
-    <Error :error="errorDisplay" />
-    <div v-if="data" class="stat-data">
-      <div class="stat-list">
-        <Stat v-for="item in statData" :key="item.label" v-bind="item" />
-      </div>
-      <div class="day-card-list">
-        <DayCard
-          v-for="(item, index) in data.forecast.forecastday"
-          :key="item.date"
-          :condition-icon="item.day.condition.icon"
-          :condition-text="item.day.condition.text"
-          :temp="item.day.avgtemp_c"
-          :date="new Date(item.date)"
-          :is-active="activeIndex === index"
-          @click="emit('selectIndex', index)"
-        />
-      </div>
+  <Error :error="errorDisplay" />
+  <div v-if="data" class="stat-data">
+    <div class="stat-list">
+      <Stat v-for="item in statData" :key="item.label" v-bind="item" />
     </div>
-    <CitySelect />
+    <div class="day-card-list">
+      <DayCard
+        v-for="(item, index) in data.forecast.forecastday"
+        :key="item.date"
+        :condition-icon="item.day.condition.icon"
+        :condition-text="item.day.condition.text"
+        :temp="item.day.avgtemp_c"
+        :date="new Date(item.date)"
+        :is-active="activeIndex === index"
+        @click="emit('selectIndex', index)"
+      />
+    </div>
   </div>
+  <CitySelect />
 </template>
 
 <style scoped>
-.right {
-  background: var(--color-bg-main);
-  padding: 60px 50px;
-  border-radius: 0 25px 25px 0;
-}
 .stat-data {
   display: flex;
   flex-direction: column;

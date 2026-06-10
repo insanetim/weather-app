@@ -1,5 +1,6 @@
 <script setup>
 import { provide, ref, watch } from "vue";
+import PaneLeft from "./components/PaneLeft.vue";
 import PaneRight from "./components/PaneRight.vue";
 import { API_KEY, API_URL, cityProvide } from "./constants.js";
 
@@ -40,13 +41,17 @@ async function getCity(city) {
 
 <template>
   <main class="main">
-    <div class="left"></div>
-    <PaneRight
-      :data
-      :error
-      :active-index="activeIndex"
-      @select-index="(i) => (activeIndex = i)"
-    />
+    <div class="left">
+      <PaneLeft :day-data="data?.forecast?.forecastday?.[activeIndex]" />
+    </div>
+    <div class="right">
+      <PaneRight
+        :data
+        :error
+        :active-index="activeIndex"
+        @select-index="(i) => (activeIndex = i)"
+      />
+    </div>
   </main>
 </template>
 
@@ -63,5 +68,10 @@ async function getCity(city) {
   background-image: url("./assets/bg.png");
   background-repeat: no-repeat;
   background-size: cover;
+}
+.right {
+  background: var(--color-bg-main);
+  padding: 60px 50px;
+  border-radius: 0 25px 25px 0;
 }
 </style>
