@@ -42,8 +42,8 @@ const date = computed(() => {
       <img
         class="icon"
         :src="dayData.day.condition.icon"
-        :alt="conditionText"
-        :title="conditionText"
+        :alt="dayData.day.condition.text"
+        :title="dayData.day.condition.text"
       />
       <div class="temperature">{{ dayData.day.avgtemp_c }} °C</div>
       <div class="condition">{{ dayData.day.condition.text }}</div>
